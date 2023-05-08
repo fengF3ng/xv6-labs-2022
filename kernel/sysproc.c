@@ -67,6 +67,9 @@ sys_sleep(void)
     sleep(&ticks, &tickslock);
   }
   release(&tickslock);
+#ifdef LAB_TRAPS
+  backtrace();
+#endif
   return 0;
 }
 
@@ -91,3 +94,34 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+#ifdef LAB_TRAPS
+uint64
+sys_sigalarm(void)
+{
+  int interval;
+  uint64 handler;
+
+  argint(0, &interval);
+  argaddr(1, &handler);
+
+  struct proc *p = myproc();
+  p->sigalarm_interval = interval;
+  p->sigalarm_handler = handler;
+  p->sigalarm_left = interval;
+  p->sigreturn_finished = 1;
+  
+
+  return 0;
+}
+
+uint64
+sys_sigreturn(void)
+{
+  struct proc *p = myproc();
+  p->sigalarm_left = p->sigalarm_interval;
+  p->sigreturn_finished = 1;
+  memmove(p->trapframe, &p->sigreturn_trapframe, sizeof(p->sigreturn_trapframe));
+  return p->trapframe->a0;
+}
+#endif

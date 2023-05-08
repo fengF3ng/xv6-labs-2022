@@ -146,6 +146,12 @@ found:
   p->context.ra = (uint64)forkret;
   p->context.sp = p->kstack + PGSIZE;
 
+#ifdef LAB_TRAPS
+  p->sigalarm_interval = 0;
+  p->sigalarm_left = 0;
+  p->sigalarm_handler = 0;
+#endif
+
   return p;
 }
 
