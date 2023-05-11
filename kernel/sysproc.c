@@ -5,6 +5,9 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#ifdef LAB_SYSCALL
+#include "sysinfo.h"
+#endif
 
 uint64
 sys_exit(void)
@@ -91,3 +94,30 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+#ifdef LAB_SYSCALL
+uint64
+sys_trace(void) {
+  int mask;
+
+  argint(0, &mask);
+  myproc()->tracemask = mask;
+  return 0;
+}
+
+uint64
+sys_sysinfo(void) {
+  struct sysinfo my_sysinfo;
+
+  my_sysinfo.freemem = get_freemem();
+  my_sysinfo.nproc = get_nproc();
+  //printf("freemem: %d, nproc: %d\n", my_sysinfo.freemem, my_sysinfo.nproc);
+
+  uint64 si;
+
+  argaddr(0, &si);
+  if (copyout(myproc()->pagetable, si, (char *)&my_sysinfo, sizeof(my_sysinfo)) != 0) return 0xffffffffffffffff;
+
+  return 0;
+}
+#endif
