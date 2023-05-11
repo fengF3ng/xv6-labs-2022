@@ -1,6 +1,9 @@
 #define T_DIR     1   // Directory
 #define T_FILE    2   // File
 #define T_DEVICE  3   // Device
+#ifdef LAB_FS
+#define T_SYMLINK 4
+#endif
 
 struct stat {
   int dev;     // File system's disk device

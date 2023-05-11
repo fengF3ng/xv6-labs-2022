@@ -23,5 +23,7 @@
 #endif
 #endif
 #define MAXPATH      128   // maximum file path name
-
+#ifdef LAB_FS
+#define SYMLINK_THRESHOLD 10
+#endif
 

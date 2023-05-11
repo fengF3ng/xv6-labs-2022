@@ -22,6 +22,9 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
+#ifdef LAB_FS
+int symlink(char *, char *);
+#endif
 
 // ulib.c
 int stat(const char*, struct stat*);
